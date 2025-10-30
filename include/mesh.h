@@ -186,14 +186,14 @@ public:
     // - latitudeDivisions: Number of divisions along the latitude
     // - longitudeDivisions: Number of divisions along the longitude
     // Returns a Mesh object representing the sphere
-    static Mesh makeSphere(float radius, int latitudeDivisions, int longitudeDivisions) {
-        Mesh mesh;
+    static Mesh* makeSphere(float radius, int latitudeDivisions, int longitudeDivisions) {
+        Mesh* mesh = new Mesh();
         if (latitudeDivisions < 2 || longitudeDivisions < 3) {
             throw std::invalid_argument("Latitude divisions must be >= 2 and longitude divisions >= 3");
         }
 
-        mesh.vertices.clear();
-        mesh.triangles.clear();
+        mesh->vertices.clear();
+        mesh->triangles.clear();
 
         // Create vertices
         for (int lat = 0; lat <= latitudeDivisions; ++lat) {
@@ -217,7 +217,7 @@ public:
                 normal.normalise();
                 normal[3] = 0.f;
 
-                mesh.addVertex(position, normal);
+                mesh->addVertex(position, normal);
             }
         }
 
@@ -229,8 +229,8 @@ public:
                 int v2 = (lat + 1) * (longitudeDivisions + 1) + lon;
                 int v3 = v2 + 1;
 
-                mesh.addTriangle(v0, v1, v2);
-                mesh.addTriangle(v1, v3, v2);
+                mesh->addTriangle(v0, v1, v2);
+                mesh->addTriangle(v1, v3, v2);
             }
         }
         return mesh;

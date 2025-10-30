@@ -20,9 +20,9 @@ public:
 		start = Clock::now();
 	}
 
-	void elapsed() {
+	float elapsed() {
 		auto diff = std::chrono::duration<double, std::milli>(Clock::now() - start);
-		std::cout << diff.count() << std::endl;
+		return diff.count();
 	}
 
 	void elapsedMicro() {

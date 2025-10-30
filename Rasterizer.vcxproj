@@ -151,28 +151,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ChronoTimer.h" />
-    <ClInclude Include="colour.h" />
-    <ClInclude Include="GamesEngineeringBase.h" />
-    <ClInclude Include="Includes.h" />
-    <ClInclude Include="light.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="render.h" />
-    <ClInclude Include="renderer.h" />
-    <ClInclude Include="RNG.h" />
-    <ClInclude Include="sentinelQueue.h" />
-    <ClInclude Include="triangle.h" />
-    <ClInclude Include="utilities.h" />
-    <ClInclude Include="vec4.h" />
-    <ClInclude Include="zbuffer.h" />
-    <ClInclude Include="zbufferAtomic.h" />
+    <ClInclude Include="include\ChronoTimer.h" />
+    <ClInclude Include="include\colour.h" />
+    <ClInclude Include="include\GamesEngineeringBase.h" />
+    <ClInclude Include="include\light.h" />
+    <ClInclude Include="include\matrix.h" />
+    <ClInclude Include="include\mesh.h" />
+    <ClInclude Include="include\render.h" />
+    <ClInclude Include="include\renderer.h" />
+    <ClInclude Include="include\RNG.h" />
+    <ClInclude Include="include\scene.h" />
+    <ClInclude Include="include\sentinelQueue.h" />
+    <ClInclude Include="include\triangle.h" />
+    <ClInclude Include="include\utilities.h" />
+    <ClInclude Include="include\vec4.h" />
+    <ClInclude Include="include\zbuffer.h" />
+    <ClInclude Include="include\zbufferAtomic.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scene1.cpp" />
-    <ClCompile Include="Scene2.cpp" />
-    <ClCompile Include="Scene3.cpp" />
+    <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="include\scenes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

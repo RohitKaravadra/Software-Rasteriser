@@ -15,66 +15,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="colour.h">
+    <ClInclude Include="include\colour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GamesEngineeringBase.h">
+    <ClInclude Include="include\GamesEngineeringBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
+    <ClInclude Include="include\light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.h">
+    <ClInclude Include="include\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.h">
+    <ClInclude Include="include\mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.h">
+    <ClInclude Include="include\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RNG.h">
+    <ClInclude Include="include\RNG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="triangle.h">
+    <ClInclude Include="include\triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vec4.h">
+    <ClInclude Include="include\vec4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zbufferAtomic.h">
+    <ClInclude Include="include\zbufferAtomic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes.h">
+    <ClInclude Include="include\utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utilities.h">
+    <ClInclude Include="include\ChronoTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChronoTimer.h">
+    <ClInclude Include="include\render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render.h">
+    <ClInclude Include="include\sentinelQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sentinelQueue.h">
+    <ClInclude Include="include\zbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zbuffer.h">
+    <ClInclude Include="include\scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Scene3.cpp">
+    <ClCompile Include="source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene2.cpp">
+    <ClCompile Include="include\scenes.h">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
