@@ -16,6 +16,24 @@ struct triangleData
 	}
 };
 
+enum class RenderMode
+{
+	Caching,
+	SharedCounter,
+	SentinelQueue
+};
+
+static std::string ToString(RenderMode mode)
+{
+	switch (mode)
+	{
+	case RenderMode::Caching: return "Caching";
+	case RenderMode::SharedCounter: return "SharedCounter";
+	case RenderMode::SentinelQueue: return "SentinelQueue";
+	default: return "Unknown";
+	}
+}
+
 class Scene
 {
 	std::atomic<int> triCounter;		// atomic triangle index counter for threads
@@ -29,6 +47,7 @@ protected:
 	std::vector<Mesh*> sceneObjects;
 	matrix sceneCamera;
 	Light sceneLight;
+	RenderMode mode = RenderMode::Caching;
 
 	// protected constructor to prevent instantiation
 	// abstract class
@@ -85,9 +104,9 @@ protected:
 	// - renderer : reference to the renderer
 	// - L : light
 	// default value set to 3 works best for this value
-	void renderCaching(const std::vector<Mesh*>& meshes, Renderer& renderer, Light& L)
+	void renderCaching(const std::vector<Mesh*>& meshes, Renderer& renderer)
 	{
-		L.omega_i.normalise(); // normalize light before rendering
+		sceneLight.omega_i.normalise(); // normalize light before rendering
 
 		// cache canvas width and height
 		unsigned int width = renderer.canvas.getWidth();
@@ -98,8 +117,8 @@ protected:
 			matrix p = renderer.vp * mesh->world;	// calculate projection matrix for the mesh
 
 			// calculate diffuse and ambient lights for mesh
-			color ambient = L.ambient * mesh->ka;
-			color diffuse = L.L * mesh->kd;
+			color ambient = sceneLight.ambient * mesh->ka;
+			color diffuse = sceneLight.L * mesh->kd;
 
 			// process all triangles of mesh
 			for (int i = 0; i < mesh->triangles.size(); i++)
@@ -115,7 +134,7 @@ protected:
 				if (fabs(t[0].p[2]) > 1.0f || fabs(t[1].p[2]) > 1.0f || fabs(t[2].p[2]) > 1.0f) break;
 
 				// Create and render triangle object 
-				triangle(t[0], t[1], t[2]).draw(renderer, L.omega_i, ambient, diffuse);
+				triangle(t[0], t[1], t[2]).draw(renderer, sceneLight.omega_i, ambient, diffuse);
 			}
 		}
 	}
@@ -126,9 +145,9 @@ protected:
 	// - L : light
 	// - totalThreads : number of threads to use for multithreading
 	// default value set to 3 works best for this value
-	void renderSharedCounter(const std::vector<Mesh*>& meshes, Renderer& renderer, Light& L, unsigned int totalThreads = 3)
+	void renderSharedCounter(const std::vector<Mesh*>& meshes, Renderer& renderer, unsigned int totalThreads = 3)
 	{
-		L.omega_i.normalise(); // normalize light before rendering
+		sceneLight.omega_i.normalise(); // normalize light before rendering
 
 		// cache canvas width and height
 		unsigned int width = renderer.canvas.getWidth();
@@ -141,8 +160,8 @@ protected:
 			matrix p = renderer.vp * mesh->world; // calculate projection matrix for the mesh
 
 			// calculate diffuse and ambient lights for mesh
-			color ambient = L.ambient * mesh->ka;
-			color diffuse = L.L * mesh->kd;
+			color ambient = sceneLight.ambient * mesh->ka;
+			color diffuse = sceneLight.L * mesh->kd;
 
 			// process all triangles of mesh
 			for (int i = 0; i < mesh->triangles.size(); i++)
@@ -169,14 +188,14 @@ protected:
 		// render triangle using multiple threads
 		std::vector<std::thread> threads; // threads array
 		for (int i = 0; i < totalThreads; i++)
-			threads.emplace_back(std::thread(&Scene::drawTriangles, this, &triangles[0], size, std::ref(renderer), L.omega_i));
+			threads.emplace_back(std::thread(&Scene::drawTriangles, this, &triangles[0], size, std::ref(renderer), sceneLight.omega_i));
 
 		for (auto& t : threads)
 			t.join();
 	}
 
 	void processMesh(const std::vector<Mesh*>& meshes, int total,
-		const unsigned int& width, const unsigned int& height, matrix vp, Light L)
+		const unsigned int& width, const unsigned int& height, matrix vp, Light& L)
 	{
 		int i;
 		while ((i = meshCounter.fetch_add(1)) < total)
@@ -224,10 +243,10 @@ protected:
 	// - L : light
 	// - totalThreads : number of threads to use for multithreading
 	// default value set to 3 works best for this value
-	void renderSentinelQueue(const std::vector<Mesh*>& meshes, Renderer& renderer, Light& L,
+	void renderSentinelQueue(const std::vector<Mesh*>& meshes, Renderer& renderer,
 		unsigned int meshThreadCount = 3, unsigned int triThreadCount = 3)
 	{
-		L.omega_i.normalise(); // normalize light before rendering
+		sceneLight.omega_i.normalise(); // normalize light before rendering
 
 		// cache canvas width and height
 		unsigned int width = renderer.canvas.getWidth();
@@ -241,10 +260,10 @@ protected:
 		std::vector<std::thread> triThreads;	// triangles threads array
 
 		for (int i = 0; i < meshThreadCount; i++)
-			meshThreads.emplace_back(std::thread(&Scene::processMesh, this, std::ref(meshes), meshes.size(), width, height, renderer.vp, L));
+			meshThreads.emplace_back(std::thread(&Scene::processMesh, this, std::ref(meshes), meshes.size(), width, height, renderer.vp, std::ref(sceneLight)));
 
 		for (int i = 0; i < triThreadCount; i++)
-			triThreads.emplace_back(std::thread(&Scene::processTriangles, this, std::ref(renderer), L.omega_i));
+			triThreads.emplace_back(std::thread(&Scene::processTriangles, this, std::ref(renderer), sceneLight.omega_i));
 
 		for (auto& t : meshThreads)
 			t.join();
@@ -257,9 +276,15 @@ protected:
 
 	void render(const std::vector<Mesh*>& meshes, Renderer& renderer, Light& L)
 	{
-		renderCaching(meshes, renderer, L);
-		//renderSharedCounter(meshes, renderer, L,4);
-		//renderSentinelQueue(meshes, renderer, L);
+		switch (mode)
+		{
+		case RenderMode::Caching: renderCaching(meshes, renderer);
+			break;
+		case RenderMode::SharedCounter: renderSharedCounter(meshes, renderer, 4);
+			break;
+		case RenderMode::SentinelQueue: renderSentinelQueue(meshes, renderer);
+			break;
+		}
 	}
 
 public:
@@ -295,4 +320,23 @@ public:
 	}
 
 	virtual void UpdateScene(float deltaTime) = 0;
+
+	void CycleRenderMode()
+	{
+		mode = (RenderMode)(((int)mode + 1) % 3);
+
+		std::string newMode = "";
+		switch (mode)
+		{
+		case RenderMode::Caching: newMode = "Caching";
+			break;
+		case RenderMode::SharedCounter: newMode = "SharedCounter";
+			break;
+		case RenderMode::SentinelQueue: newMode = "SentinelQueue";
+			break;
+		}
+		std::cout << "Render Mode Changed To " + newMode << std::endl;
+	}
+
+	RenderMode getRenderMode() const { return mode; }
 };

@@ -70,7 +70,7 @@ namespace GamesEngineeringBase
 		ID3D11ShaderResourceView* srv;           // Shader resource view
 		ID3D11PixelShader* ps;                   // Pixel shader
 		ID3D11VertexShader* vs;                  // Vertex shader
-		std::atomic<unsigned char>* image;                    // Back buffer image data
+		std::atomic<unsigned char>* image;       // Back buffer image data
 		bool keys[256];                          // Keyboard state array
 		int mousex;                              // Mouse X-coordinate
 		int mousey;                              // Mouse Y-coordinate
@@ -597,6 +597,22 @@ namespace GamesEngineeringBase
 			rect.bottom = lr.y;
 			ClipCursor(&rect);
 		}
+
+		// Sets the window title using a wide string
+		void setWindowTitle(LPCWSTR title)
+		{
+			SetWindowTextW(hwnd, title);
+		}
+
+		// Sets the window title using a standard string
+		void setWindowTitle(const std::string& title)
+		{
+			int size = MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, nullptr, 0);
+			std::wstring wideTitle(size, 0);
+			MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, wideTitle.data(), size);
+			setWindowTitle(wideTitle.c_str());
+		}
+
 
 		// Destructor to release resources
 		~Window()
